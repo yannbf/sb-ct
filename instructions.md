@@ -3,20 +3,29 @@ id: test-components-storybook
 title: "Experimental: Storybook"
 ---
 
-Playwright Test can now test components from [Storybook](https://storybook.js.org) stories. This allows you to test everything that Storybook supports, including: (1) renderers like React, Vue, Angular, Lit, Svelte, Solid, Qwik, and Ember, (2) metaframeworks like Next, Nuxt, and SvelteKit, and (3) builders like Webpack, Vite, and Rspack.
+Playwright Test can now test components from [Storybook](https://storybook.js.org) stories. This allows you to test everything that Storybook supports, including:
+
+1. Renderers like React, Vue, Angular, Lit, Svelte, Solid, Qwik, and Ember
+2. Meta frameworks like Next, Nuxt, and SvelteKit
+3. Builders like Webpack, Vite, and Rspack.
 
 ## Example
 
-Here is a typical story:
+Storybook registers component via stories, located in a `ComponentName.stories.js` file. Here is how a typical story file looks like:
 
 ```js
+// Button.stories.js
+import { Button} from './Button'
+
 export default { component: Button };
 export const Primary = { args: { label: 'Button', primary: true } }
+export const Disabled = { args: { label: 'Button', primary: true, disabled: true } }
 ```
 
-And here is that story reused in a test:
+Once defined, component stories can be reused in a test:
 
 ```js
+// Button.spec.js
 import * as ButtonStories from './Button.stories';
 
 test('event should work', async ({ mount }) => {
@@ -38,9 +47,9 @@ test('event should work', async ({ mount }) => {
 });
 ```
 
-## How to get started
+## Getting started
 
-Adding Playwright Test with Storybook to your project is easy. 
+Adding Playwright Test with Storybook to your project is done in a few steps.
 
 ### Step 0: Install Storybook
 
@@ -80,8 +89,19 @@ pnpm dlx storybook@latest init
   
 </Tabs>
 
+Next, create story files for your components, e.g.
+
+```js
+// Button.stories.js
+import { Button} from './Button'
+
+export default { component: Button };
+export const Primary = { args: { label: 'Button', primary: true } }
+export const Disabled = { args: { label: 'Button', primary: true, disabled: true } }
+```
 
 Full installation and configuration instructions are available in the [Storybook documentation](https://storybook.js.org/docs/react/get-started/install/).
+
 
 ### Step 1: Install Playwright Test for Storybook
 
@@ -141,9 +161,39 @@ test('should work', async ({ mount }) => {
 
 You can run tests using the [VS Code extension](./getting-started-vscode.md) or the command line.
 
-```sh
-npm run test-storybook
+<Tabs
+  defaultValue="npm"
+  values={[
+    {label: 'npm', value: 'npm'},
+    {label: 'yarn', value: 'yarn'},
+    {label: 'pnpm', value: 'pnpm'},
+  ]
+}>
+<TabItem value="npm">
+
+```bash
+npm run test-ct
 ```
+
+</TabItem>
+
+<TabItem value="yarn">
+
+```bash
+yarn test-ct
+```
+
+</TabItem>
+
+<TabItem value="pnpm">
+
+```bash
+pnpm run test-ct
+```
+
+ </TabItem>
+  
+</Tabs>
 
 ### Further reading: configure reporting, browsers, tracing
 
@@ -226,7 +276,7 @@ import { Button } from './Button';
 export default { component: Button }
 
 let count = 0;
-export const Interaction {
+export const Interaction = {
   args: { label: 'Button', primary: true, onClick: () => { count += 1 } },
   play: async ({ canvasElement }) => {
     await userEvent.click(within(canvasElement).getByRole('button'));
